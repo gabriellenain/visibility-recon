@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">  <!-- remove at public release -->
+    <title>Surface Reconstruction from Range Scans under Visibility Constraints</title>
+    <meta name="author" content="Gabriel Lenain, Edmond Boyer, Jean Ponce">
+    <meta name="description"
+          content="Surface Reconstruction from Range Scans under Visibility Constraints">
+    <meta name="keywords" content="Surface Reconstruction, Range Scans, Visibility, Lipschitz, Implicit Neural Representation, Sphere Tracing">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="./js/index.js"></script>
+</head>
+<body>
+
+<section class="hero">
+    <div class="default-container">
+        <div class="title-block">
+            <h1 class="title">Surface Reconstruction from Range Scans<br>under Visibility Constraints</h1>
+            <h2 class="venue">Under review</h2>
+        </div>
+
+        <!-- TODO: author photos go in ./images/<name>.jpg in place of the initials placeholders -->
+        <div class="author-section">
+            <span class="author">
+                <span class="image placeholder-photo">GL</span>
+                <span>Gabriel Lenain<sup>1,2</sup></span>
+            </span>
+            <span class="author">
+                <span class="image placeholder-photo">EB</span>
+                <span><a href="http://morpheo.inrialpes.fr/people/Boyer/">Edmond Boyer</a><sup>3</sup></span>
+            </span>
+            <span class="author">
+                <span class="image placeholder-photo">JP</span>
+                <span><a href="https://www.di.ens.fr/~ponce/">Jean Ponce</a><sup>2,4</sup></span>
+            </span>
+        </div>
+
+        <div class="affiliation">
+            <span><sup>1</sup>Inria Paris</span>
+            <span><sup>2</sup>École normale supérieure (ENS-PSL)</span>
+            <span><sup>3</sup>Univ. Grenoble Alpes, Inria, CNRS, Grenoble INP, LJK</span>
+            <span><sup>4</sup>New York University</span>
+        </div>
+
+        <div class="links">
+            <a href="./paper.pdf" class="button-80" target="_blank" rel="noopener">
+                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                <span>Paper</span>
+            </a>
+            <a href="#" class="button-80">
+                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20 L12 4 L20 20 M7.5 13h9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>arXiv</span>
+            </a>
+            <a href="#results" class="button-80">
+                <svg class="link-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9l5 3-5 3z" fill="#fff"/></svg>
+                <span>Video</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="abstract">
+    <div class="default-container">
+        <h2 class="section-title">Abstract</h2>
+        <!-- TODO: replace with the paper abstract -->
+        <p class="abstract-text">
+            A range scan records more than where a surface is: every measured ray also states where the
+            surface is not. Most implicit reconstruction methods discard this, treating the scan as an
+            unordered point cloud. We instead take the sensor origin of every point as input and fit a
+            continuous 1-Lipschitz implicit field directly to the rays, supervising the first intersection
+            found by differentiable sphere tracing rather than an unsigned distance to the points.
+            Starting from a closed-form field enclosing the scene, depth supervision carves the surface inward
+            toward the observations. The Lipschitz constraint turns visibility into a geometric
+            certificate: positive field values along a measured ray guarantee a ball of empty space around
+            it, so one-dimensional ray evidence becomes a three-dimensional free-space guarantee. The result is
+            robust to acquisition noise, outliers and sparse sampling, and avoids hallucinating surfaces in
+            regions the sensor has observed to be empty.
+        </p>
+    </div>
+</section>
+
+<section class="method" id="method">
+    <div class="default-container">
+        <h2 class="section-title">Method</h2>
+        <div class="method-row">
+            <video class="result-video square-video" autoplay muted loop playsinline preload="metadata"
+                   poster="./videos/srb_gargoyle_method_L6_scanners_poster.jpg">
+                <source src="./videos/srb_gargoyle_method_L6_scanners.mp4" type="video/mp4">
+            </video>
+            <div class="problem">
+                <div class="step">
+                    <h4>Input</h4>
+                    <p class="math">\mathcal{D} = \{(\mathbf{c}_i, \mathbf{p}_i)\}_{i=1}^{N}</p>
+                    <p class="math where">\begin{alignedat}{2}
+                        &\mathbf{c}_i \quad && \text{acquisition center} \\
+                        &\mathbf{p}_i \quad && \text{noisy measurement of } \mathcal{S}^\star
+                    \end{alignedat}</p>
+                </div>
+                <div class="step">
+                    <h4>Goal</h4>
+                    <p class="math">\text{reconstruct } \mathcal{S}^\star \text{ as } f_\theta^{-1}(0)</p>
+                </div>
+                <div class="step">
+                    <h4>Depth regression along rays</h4>
+                    <p class="math">\begin{aligned}
+                        \min_{\theta} \;\; & \frac{1}{N}\sum_{i=1}^{N} \rho\bigl(t_i(\theta) - \lVert \mathbf{p}_i - \mathbf{c}_i \rVert\bigr) \\
+                        \text{s.t.} \;\; & t_i(\theta) = \inf\,\{t \ge 0 : f_\theta(\mathbf{c}_i + t\,\mathbf{d}_i) = 0\}
+                    \end{aligned}</p>
+                    <p class="where"><span class="m">\mathbf{d}_i = \frac{\mathbf{p}_i - \mathbf{c}_i}{\lVert \mathbf{p}_i - \mathbf{c}_i \rVert}</span>,
+                       <span class="m">\rho</span> robust penalty</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="subsection-title">Training</h3>
+        <p class="note">Positional encoding parameter <i>L</i> as a simple knob to study the fidelity&ndash;robustness trade-off:
+            increasing <i>L</i> means more fitting capacity but less robustness to corruption.</p>
+        <video class="result-video" autoplay muted loop playsinline preload="metadata"
+               poster="./videos/srb_gargoyle_evo_L0_L2_L6_poster.jpg">
+            <source src="./videos/srb_gargoyle_evo_L0_L2_L6.mp4" type="video/mp4">
+        </video>
+    </div>
+</section>
+
+<section class="results" id="results">
+    <div class="default-container">
+        <h2 class="section-title">Results</h2>
+
+        <h3 class="subsection-title">Noise</h3>
+        <video class="result-video" autoplay muted loop playsinline preload="metadata"
+               poster="./videos/anchor_noise_sandwich_l0_minimal_poster.jpg">
+            <source src="./videos/anchor_noise_sandwich_l0_minimal.mp4" type="video/mp4">
+        </video>
+
+        <h3 class="subsection-title">Outliers</h3>
+        <video class="result-video" autoplay muted loop playsinline preload="metadata"
+               poster="./videos/anchor_outliers_sandwich_l0_minimal_poster.jpg">
+            <source src="./videos/anchor_outliers_sandwich_l0_minimal.mp4" type="video/mp4">
+        </video>
+
+        <h3 class="subsection-title">ARKitScenes</h3>
+        <video class="result-video" autoplay muted loop playsinline preload="metadata"
+               poster="./videos/arkitscenes_sofa_sweep_2x2_poster.jpg">
+            <source src="./videos/arkitscenes_sofa_sweep_2x2.mp4" type="video/mp4">
+        </video>
+    </div>
+</section>
+
+<section class="takeaway" id="takeaway">
+    <div class="default-container">
+        <h2 class="section-title">Takeaway</h2>
+        <!-- TODO: takeaway -->
+    </div>
+</section>
+
+<section class="thanks">
+    <div class="default-container">
+        <h2 class="section-title">Acknowledgements</h2>
+        <!-- TODO -->
+        <p class="thanks-text">Funding and acknowledgements to be added.</p>
+    </div>
+</section>
+
+<section class="ref">
+    <div class="default-container">
+        <h2 class="section-title">BibTeX</h2>
+        <!-- TODO: fill in once the paper is public -->
+        <pre class="bibtex"><code>@article{lenain2026visibility,
+  title   = {Surface Reconstruction from Range Scans under Visibility Constraints},
+  author  = {Lenain, Gabriel and Boyer, Edmond and Ponce, Jean},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="default-container">
+        Page layout inspired by the <a href="https://chumbyte.github.io/DiGS-Site/">DiGS project page</a>.
+    </div>
+</footer>
+
+</body>
+</html>
