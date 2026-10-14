@@ -85,7 +85,7 @@
 
 <section class="method" id="method">
     <div class="default-container">
-        <h2 class="section-title">Method</h2>
+        <h2 class="section-title">Approach</h2>
         <div class="method-row">
             <video class="result-video square-video" autoplay muted loop playsinline preload="metadata"
                    poster="./videos/srb_gargoyle_method_L6_scanners_poster.jpg">
@@ -96,8 +96,9 @@
                     <h4>Input</h4>
                     <p class="math">\mathcal{D} = \{(\mathbf{c}_i, \mathbf{p}_i)\}_{i=1}^{N}</p>
                     <p class="math where">\begin{alignedat}{2}
-                        &\mathbf{c}_i \quad && \text{acquisition center} \\
-                        &\mathbf{p}_i \quad && \text{noisy measurement of } \mathcal{S}^\star
+                        &\mathbf{c}_i \in \mathbb{R}^3 \quad && \text{acquisition center} \\
+                        &\mathbf{p}_i \in \mathbb{R}^3 \quad && \text{noisy measurement of } \mathcal{S}^\star \\
+                        &\mathbf{d}_i = (\mathbf{p}_i - \mathbf{c}_i) / \lVert \mathbf{p}_i - \mathbf{c}_i \rVert \quad && \text{ray direction}
                     \end{alignedat}</p>
                 </div>
                 <div class="step">
@@ -110,15 +111,18 @@
                         \min_{\theta} \;\; & \frac{1}{N}\sum_{i=1}^{N} \rho\bigl(t_i(\theta) - \lVert \mathbf{p}_i - \mathbf{c}_i \rVert\bigr) \\
                         \text{s.t.} \;\; & t_i(\theta) = \inf\,\{t \ge 0 : f_\theta(\mathbf{c}_i + t\,\mathbf{d}_i) = 0\}
                     \end{aligned}</p>
-                    <p class="where"><span class="m">\mathbf{d}_i = \frac{\mathbf{p}_i - \mathbf{c}_i}{\lVert \mathbf{p}_i - \mathbf{c}_i \rVert}</span>,
-                       <span class="m">\rho</span> robust penalty</p>
+                    <p class="math where">\begin{alignedat}{2}
+                        &f_\theta \quad && \text{1-Lipschitz MLP} \\
+                        &\rho \quad && \text{robust penalty}
+                    \end{alignedat}</p>
                 </div>
             </div>
         </div>
 
         <h3 class="subsection-title">Training</h3>
-        <p class="note">Positional encoding parameter <i>L</i> as a simple knob to study the fidelity&ndash;robustness trade-off:
-            increasing <i>L</i> means more fitting capacity but less robustness to corruption.</p>
+        <p class="note">Reconstruction of the SRB Gargoyle scene in a clean setting. We use the positional encoding
+            parameter <i>L</i> as a simple knob to study the fidelity&ndash;robustness trade-off: increasing <i>L</i>
+            means more fitting capacity but less robustness to corruption. Ours (<i>L</i>=6) captures finer geometric details.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/srb_gargoyle_evo_L0_L2_L6_poster.jpg">
             <source src="./videos/srb_gargoyle_evo_L0_L2_L6.mp4" type="video/mp4">
@@ -131,18 +135,25 @@
         <h2 class="section-title">Results</h2>
 
         <h3 class="subsection-title">Noise</h3>
+        <p class="note">Reconstruction of the SRB Anchor scene with increasing scanner noise levels. Ours (<i>L</i>=0)
+            lower fitting capacity makes it more robust to noise, while Ours (<i>L</i>=2) offers a good compromise
+            at intermediate noise levels.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/anchor_noise_sandwich_l0_minimal_poster.jpg">
             <source src="./videos/anchor_noise_sandwich_l0_minimal.mp4" type="video/mp4">
         </video>
 
         <h3 class="subsection-title">Outliers</h3>
+        <p class="note">Reconstruction of the SRB Anchor scene with increasing outlier ratios (0%, 5%, 10%, 20%)
+            relative to clean points. By enforcing visibility constraints and using a Huber loss, our method remains
+            robust to outliers.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/anchor_outliers_sandwich_l0_minimal_poster.jpg">
             <source src="./videos/anchor_outliers_sandwich_l0_minimal.mp4" type="video/mp4">
         </video>
 
         <h3 class="subsection-title">ARKitScenes</h3>
+        <p class="note">Sofa reconstruction results from real-world LiDAR scans captured with an iPad Pro.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/arkitscenes_sofa_sweep_2x2_poster.jpg">
             <source src="./videos/arkitscenes_sofa_sweep_2x2.mp4" type="video/mp4">

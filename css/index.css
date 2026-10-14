@@ -202,7 +202,7 @@ a:hover { text-decoration: underline; }
 
 .square-video { max-width: 720px; }
 
-.note { margin: 0 0 0.4em; }
+.note { margin: 0 0 0.4em; text-align: justify; }
 
 .video-wrap { margin: 1em auto; }
 .video-wrap .result-video { margin: 0; cursor: pointer; }
