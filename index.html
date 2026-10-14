@@ -112,8 +112,8 @@
                         \text{s.t.} \;\; & t_i(\theta) = \inf\,\{t \ge 0 : f_\theta(\mathbf{c}_i + t\,\mathbf{d}_i) = 0\}
                     \end{aligned}</p>
                     <p class="math where">\begin{alignedat}{2}
-                        &f_\theta \quad && \text{1-Lipschitz MLP} \\
-                        &\rho \quad && \text{robust penalty}
+                        &\bullet\;\; f_\theta \quad && \text{1-Lipschitz MLP} \\
+                        &\bullet\;\; \rho \quad && \text{robust penalty}
                     \end{alignedat}</p>
                 </div>
             </div>
@@ -122,7 +122,7 @@
         <h3 class="subsection-title">Training</h3>
         <p class="note">Reconstruction of the SRB Gargoyle scene in a clean setting. We use the positional encoding
             parameter <i>L</i> as a simple knob to study the fidelity&ndash;robustness trade-off: increasing <i>L</i>
-            means more fitting capacity but less robustness to corruption. Ours (<i>L</i>=6) captures finer geometric details.</p>
+            gives more fitting capacity but less robustness to corruption. Ours (<i>L</i>=6) captures finer geometric details.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/srb_gargoyle_evo_L0_L2_L6_poster.jpg">
             <source src="./videos/srb_gargoyle_evo_L0_L2_L6.mp4" type="video/mp4">
@@ -135,8 +135,8 @@
         <h2 class="section-title">Results</h2>
 
         <h3 class="subsection-title">Noise</h3>
-        <p class="note">Reconstruction of the SRB Anchor scene with increasing scanner noise levels. Ours (<i>L</i>=0)
-            lower fitting capacity makes it more robust to noise, while Ours (<i>L</i>=2) offers a good compromise
+        <p class="note">Reconstruction of the SRB Anchor scene with increasing scanner noise levels. The lower fitting
+            capacity of Ours (<i>L</i>=0) makes it more robust to noise, while Ours (<i>L</i>=2) offers a good compromise
             at intermediate noise levels.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/anchor_noise_sandwich_l0_minimal_poster.jpg">
@@ -145,7 +145,7 @@
 
         <h3 class="subsection-title">Outliers</h3>
         <p class="note">Reconstruction of the SRB Anchor scene with increasing outlier ratios (0%, 5%, 10%, 20%)
-            relative to clean points. By enforcing visibility constraints and using a Huber loss, our method remains
+            relative to the number of clean points. By enforcing visibility constraints and using a Huber loss, our method remains
             robust to outliers.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/anchor_outliers_sandwich_l0_minimal_poster.jpg">
@@ -153,7 +153,9 @@
         </video>
 
         <h3 class="subsection-title">ARKitScenes</h3>
-        <p class="note">Sofa reconstruction results from real-world LiDAR scans captured with an iPad Pro.</p>
+        <p class="note">Sofa reconstruction from real-world LiDAR scans captured with an iPad Pro. Ours (<i>L</i>=2)
+            yields a much more faithful reconstruction than DiGS and DiffCD: it is not oversmoothed and recovers fine
+            details such as the cushions.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/arkitscenes_sofa_sweep_2x2_poster.jpg">
             <source src="./videos/arkitscenes_sofa_sweep_2x2.mp4" type="video/mp4">
