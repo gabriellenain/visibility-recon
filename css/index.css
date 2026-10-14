@@ -83,6 +83,11 @@ a:hover { text-decoration: underline; }
     color: var(--muted);
 }
 
+.contact {
+    margin-top: 0.4em;
+    color: var(--muted);
+}
+
 .links {
     display: flex;
     flex-wrap: wrap;
