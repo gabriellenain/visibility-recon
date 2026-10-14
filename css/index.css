@@ -57,8 +57,8 @@ a:hover { text-decoration: underline; }
 
 .author .image {
     width: 110px;
-    height: 110px;
-    border-radius: 50%;
+    height: 122px;
+    border-radius: 10px;
     object-fit: cover;
     transition: opacity .2s;
 }
@@ -337,7 +337,7 @@ a:hover { text-decoration: underline; }
     .default-container { font-size: medium; }
     .title { font-size: 1.6em; }
     .title br { display: none; }
-    .author .image { width: 80px; height: 80px; }
+    .author .image { width: 80px; height: 89px; }
     .video-row { width: 100%; }
     .video-row.three { grid-template-columns: 1fr; }
     .method-row { grid-template-columns: 1fr; }
