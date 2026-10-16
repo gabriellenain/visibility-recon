@@ -121,7 +121,7 @@
             </div>
         </div>
 
-        <h3 class="subsection-title">Training</h3>
+        <h3 class="subsection-title">Fitting</h3>
         <p class="note">Reconstruction of the SRB Gargoyle scene in a clean setting. We use the positional encoding
             parameter <i>L</i> as a simple knob to study the fidelity&ndash;robustness trade-off: increasing <i>L</i>
             gives more fitting capacity but less robustness to corruption. Ours (<i>L</i>=6) captures finer geometric details.</p>
@@ -135,11 +135,12 @@
 <section class="results" id="results">
     <div class="default-container">
         <h2 class="section-title">Results</h2>
+        <p class="note">Baselines: <a href="https://chumbyte.github.io/DiGS-Site/">DiGS</a> (Ben-Shabat et al., CVPR 2022)
+            and <a href="https://arxiv.org/abs/2407.17058">DiffCD</a> (H&auml;renstam-Nielsen et al., ECCV 2024).</p>
 
         <h3 class="subsection-title">Noise</h3>
         <p class="note">Reconstruction of the SRB Anchor scene with increasing scanner noise levels. The lower fitting
-            capacity of Ours (<i>L</i>=0) makes it more robust to noise, while Ours (<i>L</i>=2) offers a good compromise
-            at intermediate noise levels.</p>
+            capacity of Ours (<i>L</i>=0) makes it robust to noise.</p>
         <video class="result-video" autoplay muted loop playsinline preload="metadata"
                poster="./videos/anchor_noise_sandwich_l0_minimal_poster.jpg">
             <source src="./videos/anchor_noise_sandwich_l0_minimal.mp4" type="video/mp4">
